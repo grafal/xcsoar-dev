@@ -22,9 +22,9 @@
 
 #include "XContestTriangle.hpp"
 
-XContestTriangle::XContestTriangle(const Trace &_trace,
+XContestTriangle::XContestTriangle(const Trace &_trace, bool is_fai,
                                    bool predict, bool _is_dhv)
-  :OLCTriangle(_trace, true, predict),
+  :OLCTriangle(_trace, is_fai, predict),
    is_dhv(_is_dhv) {}
 
 ContestResult
@@ -34,8 +34,13 @@ XContestTriangle::CalculateResult() const
 
   if (positive(result.distance)) {
     // approximation for now: gap is distance from start to finish
-    const fixed d_gap = TraceManager::GetPoint(0).GetLocation()
-      .Distance(TraceManager::GetPoint(n_points - 1).GetLocation());
+    fixed d_gap;
+    
+    if(predict)
+      d_gap = fixed(0);
+    else
+      d_gap = TraceManager::GetPoint(0).GetLocation()
+        .Distance(TraceManager::GetPoint(n_points - 1).GetLocation());
 
     // award no points if gap is >20% of triangle
 

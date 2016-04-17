@@ -72,6 +72,31 @@ InfoBoxContentOLC::Update(InfoBoxData &data)
     return;
   }
 
+  if (settings_computer.contest.contest == Contest::DHV_XC ||
+      settings_computer.contest.contest == Contest::XCONTEST) {
+    const ContestResult& result_free =
+      CommonInterface::Calculated().contest_stats.GetResult(0);
+    const ContestResult& result_triangle =
+      CommonInterface::Calculated().contest_stats.GetResult(1);
+    const ContestTraceVector &solution =
+      CommonInterface::Calculated().contest_stats.GetSolution(1);
+    fixed distance = result_free.distance;
+
+    // take best of straight and triangle
+    if (CommonInterface::Calculated().contest_stats.GetBestIndex(-1) == 1 &&
+        solution.size() == 5) {
+      fixed d_gap =
+        solution[0].GetLocation().Distance(CommonInterface::Basic().location);
+
+      if (d_gap < result_triangle.distance * fixed(0.2))
+        distance = result_triangle.distance - d_gap;
+
+      data.SetCommentFromDistance(result_triangle.distance, _T("\u0394"));
+    } else
+      data.UnsafeFormatComment(_T("%.1f pts"), (double)result_free.score);
+
+    data.SetValueFromDistance(distance);
+  } else { // original code begin
   int result_index =
     (settings_computer.contest.contest == Contest::OLC_LEAGUE) ? 0 : -1;
 
@@ -87,6 +112,7 @@ InfoBoxContentOLC::Update(InfoBoxData &data)
   data.SetValueFromDistance(result_olc.distance);
 
   data.UnsafeFormatComment(_T("%.1f pts"), (double)result_olc.score);
+  } // original code end
 }
 
 const InfoBoxPanel *
