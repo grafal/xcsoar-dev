@@ -48,3 +48,39 @@ RenderFAISector(Canvas &canvas, const WindowProjection &projection,
 
   canvas.DrawPolygon(points, p - points);
 }
+
+void
+RenderFAICloseSector(Canvas &canvas, const WindowProjection &projection,
+                const GeoPoint &pt1, const GeoPoint &pt2, fixed close_dist,
+                const FAITriangleSettings &settings)
+{
+  GeoPoint geo_points[FAI_TRIANGLE_SECTOR_MAX];
+  GeoPoint *geo_end = GenerateFAITriangleCloseArea(geo_points, pt1, pt2,
+                                                   close_dist, settings);
+
+  GeoPoint clipped[FAI_TRIANGLE_SECTOR_MAX * 3],
+    *clipped_end = clipped +
+    GeoClip(projection.GetScreenBounds().Scale(fixed(1.1)))
+      .ClipPolygon(clipped, geo_points, geo_end - geo_points);
+
+  RasterPoint points[FAI_TRIANGLE_SECTOR_MAX], *p = points;
+  for (GeoPoint *geo_i = clipped; geo_i != clipped_end;)
+    *p++ = projection.GeoToScreen(*geo_i++);
+
+  canvas.DrawPolygon(points, p - points);
+}
+
+void
+RenderFAILeg(Canvas &canvas, const WindowProjection &projection,
+             const GeoPoint &pt1, const GeoPoint &pt2)
+{
+  GeoPoint clipPt1 = pt1;
+  GeoPoint clipPt2 = pt2;
+
+  GeoClip(projection.GetScreenBounds().Scale(fixed(1.1)))
+    .ClipLine(clipPt1, clipPt2);
+  RasterPoint p1 = projection.GeoToScreen(clipPt1);
+  RasterPoint p2 = projection.GeoToScreen(clipPt2);
+
+  canvas.DrawLine(p1, p2);
+}
