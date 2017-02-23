@@ -429,3 +429,27 @@ GenerateFAITriangleArea(GeoPoint *dest,
 
   return dest;
 }
+
+GeoPoint *
+GenerateFAITriangleCloseArea(GeoPoint *dest,
+                             const GeoPoint &pt1, const GeoPoint &pt2,
+                             fixed close_dist,
+                             const FAITriangleSettings &settings)
+{
+  // begin
+  *dest++ = pt1;
+
+  // arc
+  const fixed Phi = fixed(M_PI / 2);
+  Angle bearing = pt1.Bearing(pt2);
+
+  for (unsigned i = 0; i < STEPS; ++i)
+    *dest++ = FindLatitudeLongitude(pt1,
+                bearing + Angle::Native(((fixed)i / (fixed)STEPS - fixed(0.5)) * Phi),
+                close_dist);
+
+  // end
+  *dest++ = pt1;
+
+  return dest;
+}

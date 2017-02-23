@@ -25,6 +25,7 @@ Copyright_License {
 #define XCSOAR_FAI_TRIANGLE_AREA_HPP
 
 #include "Compiler.h"
+#include "Math/fixed.hpp"
 
 struct GeoPoint;
 struct FAITriangleSettings;
@@ -39,5 +40,14 @@ GenerateFAITriangleArea(GeoPoint *dest,
                         const GeoPoint &pt1, const GeoPoint &pt2,
                         bool reverse,
                         const FAITriangleSettings &settings);
+
+/**
+ * @return a pointer after the last generated item
+ */
+GeoPoint *
+GenerateFAITriangleCloseArea(GeoPoint *dest,
+                             const GeoPoint &pt1, const GeoPoint &pt2,
+                             fixed close_dist,
+                             const FAITriangleSettings &settings);
 
 #endif

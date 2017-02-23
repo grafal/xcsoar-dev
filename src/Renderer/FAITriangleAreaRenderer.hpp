@@ -24,6 +24,8 @@ Copyright_License {
 #ifndef XCSOAR_FAI_TRIANGLE_AREA_RENDERER_HPP
 #define XCSOAR_FAI_TRIANGLE_AREA_RENDERER_HPP
 
+#include "Math/fixed.hpp"
+
 struct GeoPoint;
 class Canvas;
 class WindowProjection;
@@ -33,5 +35,15 @@ void
 RenderFAISector(Canvas &canvas, const WindowProjection &projection,
                 const GeoPoint &pt1, const GeoPoint &pt2,
                 bool reverse, const FAITriangleSettings &settings);
+
+void
+RenderFAICloseSector(Canvas &canvas, const WindowProjection &projection,
+                     const GeoPoint &origin, const GeoPoint &pt2,
+                     fixed close_dist,
+                     const FAITriangleSettings &settings);
+
+void
+RenderFAILeg(Canvas &canvas, const WindowProjection &projection,
+             const GeoPoint &pt1, const GeoPoint &pt2);
 
 #endif
