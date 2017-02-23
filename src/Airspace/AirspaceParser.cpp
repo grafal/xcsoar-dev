@@ -169,8 +169,12 @@ struct TempAirspaceType
   void
   AddPolygon(Airspaces &airspace_database)
   {
-    if (points.size() == 2)
-      points.push_back(points[1]); // fake cable as area
+    if (points.size() == 2) // fake cable as area
+    {
+      GeoPoint point = points[1];
+      point.latitude += Angle::Degrees(0.0001);
+      points.push_back(point);
+    }
     else if (points.size() < 3)
       return;
 
