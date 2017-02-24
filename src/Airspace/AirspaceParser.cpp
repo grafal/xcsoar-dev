@@ -39,7 +39,9 @@ Copyright_License {
 #include "Geo/GeoVector.hpp"
 #include "Engine/Airspace/AirspaceClass.hpp"
 #include "Util/StaticString.hxx"
+#include "Math/Point2D.hpp"
 
+#include <math.h>
 #include <tchar.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -171,9 +173,32 @@ struct TempAirspaceType
   {
     if (points.size() == 2) // fake cable as area
     {
-      GeoPoint point = points[1];
-      point.latitude += Angle::Degrees(0.0001);
-      points.push_back(point);
+      Point2D<fixed> pt1(points[0].longitude.Native(),
+                        points[0].latitude.Native());
+      Point2D<fixed> pt2(points[1].longitude.Native(),
+                        points[1].latitude.Native());
+
+      Point2D<fixed> vec = pt2 - pt1;
+      
+      fixed dist = sqrt(vec.x * vec.x + vec.y * vec.y);
+
+      if(dist == fixed(0)) // to close
+        return;
+
+      vec =  Point2D<fixed>(vec.x / dist, vec.y / dist);
+      fixed scale = fixed(0.000001);
+      Point2D<fixed> vecA = Point2D<fixed>(vec.y * scale, -vec.x * scale);
+      Point2D<fixed> vecB = Point2D<fixed>(-vec.y * scale, vec.x * scale);
+
+      Point2D<fixed> pt1a = pt1 + vecA;
+      Point2D<fixed> pt1b = pt1 + vecB;
+      Point2D<fixed> pt2a = pt2 + vecA;
+      Point2D<fixed> pt2b = pt2 + vecB;
+
+      points[0] = GeoPoint(Angle::Native(pt1a.x), Angle::Native(pt1a.y));
+      points[1] = GeoPoint(Angle::Native(pt1b.x), Angle::Native(pt1b.y));
+      points.push_back(GeoPoint(Angle::Native(pt2b.x), Angle::Native(pt2b.y)));
+      points.push_back(GeoPoint(Angle::Native(pt2a.x), Angle::Native(pt2a.y)));
     }
     else if (points.size() < 3)
       return;
