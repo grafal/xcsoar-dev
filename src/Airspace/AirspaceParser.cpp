@@ -33,6 +33,7 @@ Copyright_License {
 #include "Util/NumberParser.hpp"
 #include "Util/Macros.hpp"
 #include "Geo/Math.hpp"
+#include "Geo/Flat/FlatPoint.hpp"
 #include "IO/LineReader.hpp"
 #include "Airspace/AirspacePolygon.hpp"
 #include "Airspace/AirspaceCircle.hpp"
@@ -173,23 +174,23 @@ struct TempAirspaceType
   {
     if (points.size() == 2) // fake cable as area
     {
-      Point2D<fixed> pt1(points[0].longitude.Native(),
-                         points[0].latitude.Native());
-      Point2D<fixed> pt2(points[1].longitude.Native(),
-                         points[1].latitude.Native());
-      Point2D<fixed> vec = pt2 - pt1;
-      fixed dist = sqrt(vec.x * vec.x + vec.y * vec.y);
-      fixed scale = fixed(0.000001);
+      FlatPoint pt1(points[0].longitude.Native(),
+                    points[0].latitude.Native());
+      FlatPoint pt2(points[1].longitude.Native(),
+                    points[1].latitude.Native());
+      FlatPoint vec = pt2 - pt1;
+      fixed dist = pt1.Distance(pt2);
 
-      if(dist == fixed(0)) // to close
+      if(dist == fixed(0)) // too close
         return;
 
-      vec =  Point2D<fixed>(vec.x * scale / dist, -vec.y * scale / dist);
+      fixed scale = fixed(0.000001) / dist;
+      vec = FlatPoint(vec.y * scale, -vec.x * scale);
 
-      Point2D<fixed> pt1a = pt1 + vec;
-      Point2D<fixed> pt1b = pt1 - vec;
-      Point2D<fixed> pt2a = pt2 + vec;
-      Point2D<fixed> pt2b = pt2 - vec;
+      FlatPoint pt1a = pt1 + vec;
+      FlatPoint pt1b = pt1 - vec;
+      FlatPoint pt2a = pt2 + vec;
+      FlatPoint pt2b = pt2 - vec;
 
       points[0] = GeoPoint(Angle::Native(pt1a.x), Angle::Native(pt1a.y));
       points[1] = GeoPoint(Angle::Native(pt1b.x), Angle::Native(pt1b.y));
