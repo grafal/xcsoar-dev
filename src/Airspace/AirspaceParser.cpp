@@ -178,13 +178,14 @@ struct TempAirspaceType
                     points[0].latitude.Native());
       FlatPoint pt2(points[1].longitude.Native(),
                     points[1].latitude.Native());
-      FlatPoint vec = pt2 - pt1;
-      fixed dist = pt1.Distance(pt2);
+      FlatPoint vec = (pt2 - pt1) * fixed(1000000.0); // delta and inc precission
+      fixed dist = sqrt(vec.x * vec.x + vec.y * vec.y);
 
       if(dist == fixed(0)) // too close
         return;
 
-      fixed scale = fixed(0.000001) / dist;
+      // unit vector and scale for offset
+      fixed scale = fixed(0.000003) / dist;
       vec = FlatPoint(vec.y * scale, -vec.x * scale);
 
       FlatPoint pt1a = pt1 + vec;
