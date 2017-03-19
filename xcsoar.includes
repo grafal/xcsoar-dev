@@ -1,0 +1,14 @@
+src
+src/Compatibility
+src/Device/Driver/Volkslogger
+src/Dialogs
+src/Hardware
+src/OS
+src/Screen/FB
+src/Terrain/jasper
+src/Terrain/jasper/jp2
+src/Terrain/jasper/jpc
+src/Topography/shapelib
+src/unix
+src/zzip
+src/Math
