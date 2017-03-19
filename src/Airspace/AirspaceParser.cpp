@@ -34,6 +34,7 @@ Copyright_License {
 #include "Util/Macros.hpp"
 #include "Geo/Math.hpp"
 #include "Geo/Flat/FlatPoint.hpp"
+#include "Geo/Flat/FlatGeoPoint.hpp"
 #include "IO/LineReader.hpp"
 #include "Airspace/AirspacePolygon.hpp"
 #include "Airspace/AirspaceCircle.hpp"
@@ -172,31 +173,27 @@ struct TempAirspaceType
   void
   AddPolygon(Airspaces &airspace_database)
   {
-    if (points.size() == 2) // fake cable as area
+    if (points.size() == 2) // expand cable to area
     {
-      FlatPoint pt1(points[0].longitude.Native(),
-                    points[0].latitude.Native());
-      FlatPoint pt2(points[1].longitude.Native(),
-                    points[1].latitude.Native());
-      FlatPoint vec = (pt2 - pt1) * fixed(1000000.0); // delta and inc precission
-      fixed dist = sqrt(vec.x * vec.x + vec.y * vec.y);
+//      const auto &projection = airspace_database.GetProjection(); // invalid until posfix
+      FlatProjection projection(points[0]);
+      const FlatPoint pt1 = projection.ProjectFloat(points[0]);
+      const FlatPoint pt2 = projection.ProjectFloat(points[1]);
+      FlatPoint vec = (pt2 - pt1);
+      fixed dist = pt1.Distance(pt2);
 
       if(dist == fixed(0)) // too close
         return;
 
       // unit vector and scale for offset
-      fixed scale = fixed(0.000003) / dist;
+      fixed scale = fixed(0.1) / dist;
       vec = FlatPoint(vec.y * scale, -vec.x * scale);
 
-      FlatPoint pt1a = pt1 + vec;
-      FlatPoint pt1b = pt1 - vec;
-      FlatPoint pt2a = pt2 + vec;
-      FlatPoint pt2b = pt2 - vec;
-
-      points[0] = GeoPoint(Angle::Native(pt1a.x), Angle::Native(pt1a.y));
-      points[1] = GeoPoint(Angle::Native(pt1b.x), Angle::Native(pt1b.y));
-      points.push_back(GeoPoint(Angle::Native(pt2b.x), Angle::Native(pt2b.y)));
-      points.push_back(GeoPoint(Angle::Native(pt2a.x), Angle::Native(pt2a.y)));
+      // set edges
+      points[0] = projection.Unproject(pt1 + vec);
+      points[1] = projection.Unproject(pt1 - vec);
+      points.push_back(projection.Unproject(pt2 - vec));
+      points.push_back(projection.Unproject(pt2 + vec));
     }
     else if (points.size() < 3)
       return;
