@@ -21,6 +21,7 @@ Copyright_License {
 }
 */
 
+#include <stdio.h>
 #include "Screen/TopWindow.hpp"
 #include "Screen/Custom/TopCanvas.hpp"
 #include "Event/Globals.hpp"
