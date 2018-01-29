@@ -358,7 +358,7 @@ public:
   gcc_pure
   const TaskProjection&
   GetTaskProjection() const {
-    assert(!IsEmpty());
+//    assert(!IsEmpty());
 
     return task_projection;
   }
