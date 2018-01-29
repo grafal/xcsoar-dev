@@ -80,10 +80,11 @@ FormatRelativeUserAltitude(fixed value, TCHAR *buffer, bool include_unit)
 }
 
 void
-FormatUserDistance(fixed value, TCHAR *buffer, bool include_unit, int precision)
+FormatUserDistance(fixed value, TCHAR *buffer, bool include_unit, int precision,
+                   const TCHAR *prefix)
 {
   FormatDistance(buffer, value, Units::GetUserDistanceUnit(),
-                 include_unit, precision);
+                 include_unit, precision, prefix);
 }
 
 Unit
