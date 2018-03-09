@@ -34,7 +34,7 @@ class XContestTriangle : public OLCTriangle {
   const bool is_dhv;
 
 public:
-  XContestTriangle(const Trace &_trace, bool predict, bool _is_dhv);
+  XContestTriangle(const Trace &_trace, bool is_fai, bool predict, bool _is_dhv);
 
 protected:
   /* virtual methods from AbstractContest */

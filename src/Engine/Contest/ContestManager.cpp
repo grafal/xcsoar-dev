@@ -35,9 +35,9 @@ ContestManager::ContestManager(const Contest _contest,
    olc_plus(),
    dmst_quad(trace_full),
    xcontest_free(trace_full, false),
-   xcontest_triangle(trace_triangle, predict_triangle, false),
+   xcontest_triangle(trace_triangle, false, predict_triangle, false),
    dhv_xc_free(trace_full, true),
-   dhv_xc_triangle(trace_triangle, predict_triangle, true),
+   dhv_xc_triangle(trace_triangle, false, predict_triangle, true),
    sis_at(trace_full),
    net_coupe(trace_full)
 {

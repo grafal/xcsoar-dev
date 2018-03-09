@@ -34,4 +34,14 @@ RenderFAISector(Canvas &canvas, const WindowProjection &projection,
                 const GeoPoint &pt1, const GeoPoint &pt2,
                 bool reverse, const FAITriangleSettings &settings);
 
+void
+RenderFAICloseSector(Canvas &canvas, const WindowProjection &projection,
+                     const GeoPoint &origin, const GeoPoint &pt2,
+                     double close_dist,
+                     const FAITriangleSettings &settings);
+
+void
+RenderFAILeg(Canvas &canvas, const WindowProjection &projection,
+             const GeoPoint &pt1, const GeoPoint &pt2);
+
 #endif

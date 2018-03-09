@@ -38,4 +38,13 @@ GenerateFAITriangleArea(GeoPoint *dest,
                         bool reverse,
                         const FAITriangleSettings &settings);
 
+/**
+ * @return a pointer after the last generated item
+ */
+GeoPoint *
+GenerateFAITriangleCloseArea(GeoPoint *dest,
+                             const GeoPoint &pt1, const GeoPoint &pt2,
+                             double close_dist,
+                             const FAITriangleSettings &settings);
+
 #endif

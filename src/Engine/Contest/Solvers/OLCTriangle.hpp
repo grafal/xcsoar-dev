@@ -45,7 +45,6 @@ protected:
   /* Contains the best flat distance found so far */
   unsigned best_d;
 
-private:
   /**
    * Assume the the pilot will reach the start point?  This is useful
    * for continuous (live) calculation, to give the pilot an estimate
@@ -55,6 +54,7 @@ private:
    */
   const bool predict;
 
+private:
   /**
    * Do an incremental analysis, attempting to improve the result in
    * each iteration?  If set, then the new triangle is considered to be

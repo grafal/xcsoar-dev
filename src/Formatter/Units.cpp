@@ -80,15 +80,23 @@ FormatRelativeAltitude(TCHAR *buffer, double value,
 
 void
 FormatDistance(TCHAR *buffer, double value, Unit unit,
-               bool include_unit, int precision)
+                      bool include_unit, int precision, const TCHAR *prefix)
 {
   value = Units::ToUserUnit(value, unit);
 
-  if (include_unit)
-    StringFormatUnsafe(buffer, _T("%.*f %s"), precision, (double)value,
-                       Units::GetUnitName(unit));
-  else
-    StringFormatUnsafe(buffer, _T("%.*f"), precision, (double)value);
+  if (prefix == nullptr) {
+    if (include_unit)
+      StringFormatUnsafe(buffer, _T("%.*f %s"), precision, (double)value,
+                         Units::GetUnitName(unit));
+    else
+      StringFormatUnsafe(buffer, _T("%.*f"), precision, (double)value);
+  } else {
+    if (include_unit)
+      StringFormatUnsafe(buffer, _T("%s %.*f %s"), prefix, precision,
+                         (double)value, Units::GetUnitName(unit));
+    else
+      StringFormatUnsafe(buffer, _T("%s %.*f"), prefix, precision, (double)value);
+  }
 }
 
 gcc_const

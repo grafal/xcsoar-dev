@@ -62,9 +62,12 @@ InfoBoxData::SetValueFromTaskSpeed(double new_value, bool precision)
 }
 
 void
-InfoBoxData::SetCommentFromDistance(double new_value)
+InfoBoxData::SetCommentFromDistance(double new_value, const TCHAR *prefix)
 {
-  FormatUserDistanceSmart(new_value, comment.buffer());
+  if (prefix == nullptr)
+    FormatUserDistanceSmart(new_value, comment.buffer());
+  else
+    FormatUserDistance(new_value, comment.buffer(), true, 1, prefix);
 }
 
 void

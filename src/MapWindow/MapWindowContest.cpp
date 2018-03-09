@@ -22,6 +22,7 @@ Copyright_License {
 */
 
 #include "MapWindow.hpp"
+#include "Engine/Task/Shapes/FAITrianglePointValidator.hpp"
 #include "Renderer/FAITriangleAreaRenderer.hpp"
 #include "Look/MapLook.hpp"
 
@@ -40,15 +41,68 @@ RenderFAISectors(Canvas &canvas, const WindowProjection &projection,
   RenderFAISector(canvas, projection, a, b, true, settings);
 }
 
+static void
+DrawXContest(Canvas &canvas, const WindowProjection &projection,
+              const FAITriangleSettings &settings,
+              const ContestStatistics &contest_stats,
+              const GeoPoint &location)
+{
+  const ContestTraceVector &solution = contest_stats.GetSolution(1);
+
+  if(solution.size() == 5) {
+    // draw triangle sectors
+    const GeoPoint &p1 = solution[1].GetLocation();
+    const GeoPoint &p2 = solution[2].GetLocation();
+    const GeoPoint &p3 = solution[3].GetLocation();
+    bool ccw = ((p2.latitude.Degrees() - p1.latitude.Degrees()) *
+                (p3.longitude.Degrees() - p1.longitude.Degrees()) -
+                (p3.latitude.Degrees() - p1.latitude.Degrees()) *
+                (p2.longitude.Degrees() - p1.longitude.Degrees())) >= 0;
+
+    canvas.Select(Brush(COLOR_GREEN.WithAlpha(60)));
+    canvas.Select(Pen(1, COLOR_BLACK));
+
+#ifdef ENABLE_OPENGL
+    const GLBlend blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#endif
+
+    // FAI sectors
+    RenderFAISector(canvas, projection, p1, p2, ccw, settings);
+    RenderFAISector(canvas, projection, p2, p3, ccw, settings);
+    RenderFAISector(canvas, projection, p3, p1, ccw, settings);
+
+    // close sector
+    double d_gap = contest_stats.GetResult(1).distance * 0.2; // 20% rule
+    RenderFAICloseSector(canvas, projection,
+                         solution[0].GetLocation(),
+                         location, d_gap, settings);
+
+    // triangle
+    canvas.Select(Brush());
+    canvas.Select(Pen(1, COLOR_YELLOW));
+    RenderFAILeg(canvas, projection, p1, p2);
+    RenderFAILeg(canvas, projection, p2, p3);
+    RenderFAILeg(canvas, projection, p3, p1);
+  }
+}
+
 void
 MapWindow::DrawContest(Canvas &canvas)
 {
   const FlyingState &flying = Calculated().flight;
 
-  if (GetMapSettings().show_fai_triangle_areas &&
-      flying.release_location.IsValid() && flying.far_location.IsValid()) {
-    const FAITriangleSettings &settings =
-      GetMapSettings().fai_triangle_settings;
+  if (GetMapSettings().show_fai_triangle_areas) {
+    Contest contest = GetComputerSettings().contest.contest;
+
+    if (contest == Contest::XCONTEST || contest == Contest::DHV_XC)
+      DrawXContest(canvas, render_projection,
+                   GetMapSettings().fai_triangle_settings,
+                   BaseBlackboard::Calculated().contest_stats,
+                   BaseBlackboard::Basic().location);
+    else { // original code begin
+    if (flying.release_location.IsValid() && flying.far_location.IsValid()) {
+      const FAITriangleSettings &settings =
+        GetMapSettings().fai_triangle_settings;
 
     /* draw FAI triangle areas */
     static constexpr Color fill_color = COLOR_YELLOW;
@@ -79,5 +133,7 @@ MapWindow::DrawContest(Canvas &canvas)
                      settings);
     canvas.CopyAnd(buffer_canvas);
 #endif
+      }
+    } // original code end
   }
 }

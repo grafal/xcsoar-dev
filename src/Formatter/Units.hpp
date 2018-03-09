@@ -86,10 +86,11 @@ FormatRelativeAltitude(TCHAR *buffer, double value, Unit unit,
  * @param unit the distance unit (e.g. m, ft, km, nm, sm)
  * @param include_unit include the unit into the string?
  * @param precision the number of decimal places
+ * @param prefix text to prepend to the formatted string
  */
-void
-FormatDistance(TCHAR *buffer, double value, const Unit unit,
-               bool include_unit = true, int precision = 0);
+void FormatDistance(TCHAR *buffer, double value, const Unit unit,
+                    bool include_unit = true, int precision = 0,
+                    const TCHAR *prefix = nullptr);
 
 /**
  * Converts a distance into a formatted string using the smaller version

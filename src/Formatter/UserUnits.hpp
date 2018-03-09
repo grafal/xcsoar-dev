@@ -98,10 +98,11 @@ FormatRelativeUserAltitude(double value, TCHAR *buffer,
  * @param buffer buffer string to write to (pointer)
  * @param include_unit include the unit into the string?
  * @param precision the number of decimal places
+ * @param prefix text to prepend to the formatted string
  */
-void
-FormatUserDistance(double value, TCHAR *buffer,
-                   bool include_unit = true, int precision = 0);
+void FormatUserDistance(double value, TCHAR *buffer,
+                        bool include_unit = true, int precision = 0,
+                        const TCHAR *prefix = nullptr);
 
 /**
  * Converts a distance into a formatted string using the smaller version
