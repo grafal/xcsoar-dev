@@ -50,7 +50,8 @@ void
 AirspaceLabelList::Add(const GeoPoint &pos, AirspaceClass cls, 
                        const AirspaceAltitude &base, const AirspaceAltitude &top)
 {
-  if (labels.full())
+  if ((labels.full()) ||
+      (cls == AirspaceClass::DANGER))
     return;
 
   auto &label = labels.append();
