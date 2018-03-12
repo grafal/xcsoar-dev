@@ -294,7 +294,7 @@ ChartRenderer::DrawLine(const double xmin, const double ymin,
   canvas.DrawLine(ToScreen(xmin, ymin), ToScreen(xmax, ymax));
 }
 
-void 
+void
 ChartRenderer::DrawFilledLine(const double xmin, const double ymin,
                               const double xmax, const double ymax,
                               const Brush &brush)
@@ -412,6 +412,9 @@ ChartRenderer::FormatTicText(TCHAR *text, const double val, const double step,
 void
 ChartRenderer::DrawXGrid(double tic_step, double unit_step, UnitFormat unit_format)
 {
+  int y;
+  int ymin;
+  bool has_padding = (rc_chart.bottom > rc.bottom);
   assert(tic_step > 0);
 
   canvas.Select(look.axis_value_font);
@@ -433,7 +436,10 @@ ChartRenderer::DrawXGrid(double tic_step, double unit_step, UnitFormat unit_form
   line[2].y += minor_tick_size;
   line[3].y -= minor_tick_size;
 
-  const int y = line[1].y + padding_text;
+  if(has_padding)
+    y = line[1].y + padding_text;
+  else
+    y = line[1].y - padding_text;
 
   auto start = (int)(x.min / tic_step) * tic_step;
 
@@ -459,11 +465,17 @@ ChartRenderer::DrawXGrid(double tic_step, double unit_step, UnitFormat unit_form
           if (unit_format != UnitFormat::NONE) {
             TCHAR unit_text[MAX_PATH];
             FormatTicText(unit_text, xval * unit_step / tic_step, unit_step, unit_format);
-            const auto w = canvas.CalcTextSize(unit_text).cx;
-            xmin -= w/2;
+            PixelSize tsize = canvas.CalcTextSize(unit_text);
+            xmin -= tsize.cx / 2;
+
+            if (has_padding)
+              ymin = y;
+            else
+              ymin = y - tsize.cy;
+
             if ((xmin >= next_text) && ((int)(xmin + Layout::VptScale(30)) < rc_chart.right)) {
-              canvas.DrawText(xmin, y, unit_text);
-              next_text = xmin + w + Layout::GetTextPadding();
+              canvas.DrawText(xmin, ymin, unit_text);
+              next_text = xmin + tsize.cx + Layout::GetTextPadding();
             }
           }
         }

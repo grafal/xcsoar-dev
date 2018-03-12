@@ -61,7 +61,7 @@ CrossSectionRenderer::ReadBlackboard(const MoreData &_gps_info,
 void
 CrossSectionRenderer::Paint(Canvas &canvas, const PixelRect rc) const
 {
-  ChartRenderer chart(chart_look, canvas, rc);
+  ChartRenderer chart(chart_look, canvas, rc, false);
 
   if (!vec.IsValid() || !start.IsValid()) {
     chart.DrawNoData(_("Not moving"));
